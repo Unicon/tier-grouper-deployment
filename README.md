@@ -191,3 +191,27 @@ sudo docker service create --detach --name=ws \
 
 sudo docker service list
 ```
+
+# Resetting the Env
+
+## Grouper Stuff
+
+```
+sudo docker service rm daemon
+sudo docker service rm ui
+sudo docker service rm ws
+
+sudo docker secret rm grouper.hibernate.properties
+sudo docker secret rm subject.properties
+sudo docker secret rm host-key.pem
+sudo docker config rm shibboleth2.xml
+sudo docker config rm host-cert.pem
+```
+
+## Everything else
+
+```
+sudo docker stack rm anc
+sudo docker service rm registry 
+sudo docker network rm internal
+```
