@@ -110,12 +110,11 @@ cd ..
 ```
 cd configs-and-secrets
 
-sudo docker secret create subject.properties grouper_subject.properties
+sudo docker secret create grouper.hibernate.properties grouper.hibernate.properties
+sudo docker secret create subject.properties subject.properties
 sudo docker secret create host-key.pem host-key.pem
 sudo docker config create shibboleth2.xml /etc/shibboleth/shibboleth2.xml
-sudo docker config create idp-metadata.xml /etc/shibboleth/idp-metadata.xml
 sudo docker config create host-cert.pem /etc/pki/tls/certs/host-cert.pem
-sudo docker config create host-cert.pem /etc/pki/tls/certs/cachain.pem
 
 cd ..
 ```
@@ -159,7 +158,6 @@ sudo docker service create --detached --name=ui \
   --secret source=subject.properties,target=grouper_subject.properties \  
   --secret host-key.pem \
   --config source=shibboleth2.xml,target=/etc/shibboleth/shibboleth2.xml \
-  --config source=idp-metadata.xml,target=/etc/shibboleth/idp-metadata.xml \
   --config source=host-cert.pem,target=/etc/pki/tls/certs/host-cert.pem \
   --config source=host-cert.pem,target=/etc/pki/tls/certs/cachain.pem \
   localhost:5000/organization/grouper-ui
@@ -186,6 +184,6 @@ sudo docker service create --detached --name=ws \
   --config source=host-cert.pem,target=/etc/pki/tls/certs/host-cert.pem \
   --config source=host-cert.pem,target=/etc/pki/tls/certs/cachain.pem \
   localhost:5000/organization/grouper-ws
-  
+
 sudo docker service list
 ```
