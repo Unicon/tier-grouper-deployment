@@ -92,6 +92,20 @@ sudo docker run -it --rm \
 cd ..
 ```
 
+## Configs and Secrets
+
+```
+cd configs-and-secrets
+
+sudo docker secret create grouper.hibernate.properties grouper.hibernate.properties
+sudo docker secret create subject.properties subject.properties
+sudo docker secret create host-key.pem host-key.pem
+sudo docker config create shibboleth2.xml shibboleth2.xml
+sudo docker config create host-cert.pem host-cert.pem
+
+cd ..
+```
+
 
 # Build Base Image
 
@@ -105,19 +119,6 @@ cd ..
 ```
 
 
-## Configs and Secrets
-
-```
-cd configs-and-secrets
-
-sudo docker secret create grouper.hibernate.properties grouper.hibernate.properties
-sudo docker secret create subject.properties subject.properties
-sudo docker secret create host-key.pem host-key.pem
-sudo docker config create shibboleth2.xml /etc/shibboleth/shibboleth2.xml
-sudo docker config create host-cert.pem /etc/pki/tls/certs/host-cert.pem
-
-cd ..
-```
 
 # Create services
 
@@ -133,7 +134,8 @@ cd ..
 ```
 
 ```
-sudo docker service create --detached --name=daemon \
+sudo docker service create --detach --name=daemon \
+  --network internal \
   --secret source=grouper.hibernate.properties,target=grouper_grouper.hibernate.properties \
   --secret source=subject.properties,target=grouper_subject.properties \
   localhost:5000/organization/grouper-daemon
@@ -153,7 +155,8 @@ cd ..
 ```
 
 ```
-sudo docker service create --detached --name=ui \
+sudo docker service create --detach --name=ui \
+  --network internal \
   --secret source=grouper.hibernate.properties,target=grouper_grouper.hibernate.properties \
   --secret source=subject.properties,target=grouper_subject.properties \  
   --secret host-key.pem \
@@ -177,7 +180,8 @@ cd ..
 ```
 
 ```
-sudo docker service create --detached --name=ws \
+sudo docker service create --detach --name=ws \
+  --network internal \
   --secret source=grouper.hibernate.properties,target=grouper_grouper.hibernate.properties \
   --secret source=subject.properties,target=grouper_subject.properties \
   --secret host-key.pem \
