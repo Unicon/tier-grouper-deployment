@@ -157,9 +157,10 @@ cd ..
 ```
 sudo docker service create --detach --name=ui \
   --network internal \
+  --publish 443:443 \
   --secret source=grouper.hibernate.properties,target=grouper_grouper.hibernate.properties \
-  --secret source=subject.properties,target=grouper_subject.properties \  
-  --secret host-key.pem \
+  --secret source=subject.properties,target=grouper_subject.properties \
+  --secret source=host-key.pem,target=host-key.pem \
   --config source=shibboleth2.xml,target=/etc/shibboleth/shibboleth2.xml \
   --config source=host-cert.pem,target=/etc/pki/tls/certs/host-cert.pem \
   --config source=host-cert.pem,target=/etc/pki/tls/certs/cachain.pem \
@@ -167,6 +168,8 @@ sudo docker service create --detach --name=ui \
   
 sudo docker service list
 ```
+
+<https://<hostname_or_ip>/grouper>
 
 ## WS
 
@@ -182,6 +185,7 @@ cd ..
 ```
 sudo docker service create --detach --name=ws \
   --network internal \
+  --publish 8443:443 \
   --secret source=grouper.hibernate.properties,target=grouper_grouper.hibernate.properties \
   --secret source=subject.properties,target=grouper_subject.properties \
   --secret host-key.pem \
@@ -191,6 +195,8 @@ sudo docker service create --detach --name=ws \
 
 sudo docker service list
 ```
+
+<https://<hostname_or_ip>:8443/grouper-ws/status?diagnosticType=db>
 
 # Resetting the Env
 
