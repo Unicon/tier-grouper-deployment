@@ -61,8 +61,8 @@ sudo docker swarm init
 # Start Registry
 
 ```
-sudo docker service create --name registry -p 5000:5000 registry:2
-sudo docker service ls
+sudo docker container run -d --name registry -p 5000:5000 registry:2
+sudo docker container ps
 ```
 
 ```
@@ -82,26 +82,37 @@ sudo docker service ls
 cd ..
 ```
 
+# Build Base Image
+
+```
+cd base
+
+sudo docker build --tag=localhost:5000/organization/grouper-base .
+sudo docker push localhost:5000/organization/grouper-base
+
+cd ..
+```
+
 ## Populate Database
 
 ```
-sudo docker run -it --rm \
-  --mount type=bind,src=$(pwd)/grouper.hibernate.properties,dst=/run/secrets/grouper_grouper.hibernate.properties \
-  --mount type=bind,src=$(pwd)/grouper.hibernate.properties,dst=/run/secrets/grouper_grouper.hibernate.properties \
+sudo docker container run -it --rm \
+  --mount type=bind,src=$(pwd)/configs-and-secrets/grouper.hibernate.properties,dst=/run/secrets/grouper_grouper.hibernate.properties \
+  --mount type=bind,src=$(pwd)/configs-and-secrets/subject.properties,dst=/run/secrets/grouper_subject.properties \
   --network internal \
-  tier/grouper gsh -registry -check -runscript -noprompt
+  localhost:5000/organization/grouper-base gsh -registry -check -runscript -noprompt
 
-sudo docker run -it --rm \
-  --mount type=bind,src=$(pwd)/grouper.hibernate.properties,dst=/run/secrets/grouper_grouper.hibernate.properties \
+sudo docker container run -it --rm \
+  --mount type=bind,src=$(pwd)/configs-and-secrets/grouper.hibernate.properties,dst=/run/secrets/grouper_grouper.hibernate.properties \
+  --mount type=bind,src=$(pwd)/configs-and-secrets/subject.properties,dst=/run/secrets/grouper_subject.properties \
   --network internal \
-  tier/grouper gsh
+  localhost:5000/organization/grouper-base gsh
+```
 
-
+```
 grouperSession = GrouperSession.startRootSession();
-addGroup("etc","sysadmingroup", "AllsysadmingroupUsers");
 addMember("etc:sysadmingroup","jgasper");
-
-cd ..
+:quit
 ```
 
 ## Configs and Secrets
@@ -119,16 +130,6 @@ cd ..
 ```
 
 
-# Build Base Image
-
-```
-cd base
-
-sudo docker build --tag=localhost:5000/organization/grouper-base .
-sudo docker push localhost:5000/organization/grouper-base
-
-cd ..
-```
 
 
 
@@ -230,6 +231,6 @@ sudo docker config rm host-cert.pem
 
 ```
 sudo docker stack rm anc
-sudo docker service rm registry 
+sudo docker container rm -f registry 
 sudo docker network rm internal
 ```
