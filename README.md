@@ -79,6 +79,7 @@ cd ancillary
 sudo docker network create --driver overlay --scope swarm --attachable internal
 sudo docker stack deploy anc -c stack.yml
 sudo docker service ls
+cd ..
 ```
 
 ## Populate Database
@@ -86,8 +87,19 @@ sudo docker service ls
 ```
 sudo docker run -it --rm \
   --mount type=bind,src=$(pwd)/grouper.hibernate.properties,dst=/run/secrets/grouper_grouper.hibernate.properties \
+  --mount type=bind,src=$(pwd)/grouper.hibernate.properties,dst=/run/secrets/grouper_grouper.hibernate.properties \
   --network internal \
   tier/grouper gsh -registry -check -runscript -noprompt
+
+sudo docker run -it --rm \
+  --mount type=bind,src=$(pwd)/grouper.hibernate.properties,dst=/run/secrets/grouper_grouper.hibernate.properties \
+  --network internal \
+  tier/grouper gsh
+
+
+grouperSession = GrouperSession.startRootSession();
+addGroup("etc","sysadmingroup", "AllsysadmingroupUsers");
+addMember("etc:sysadmingroup","jgasper");
 
 cd ..
 ```
