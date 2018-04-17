@@ -4,8 +4,20 @@
 
 ## Clean Centos 7 install
 
+- 4 processors 
+- 4-6 gb RAM
+- 64 gb harddrive (we only use about 10gb)
+- all host/guest shared components turned off
 - user account that can sudo
-- SSH into the server for copy/paste, etc.
+
+## On the new machine
+
+```
+ip addr show
+```
+
+- SSH into the server (copy/paste, etc. is easier)
+- setup grouper.example.edu and idp.example.edu hostnames
 
 ## VM Tools installed 
 
