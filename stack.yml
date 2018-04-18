@@ -1,0 +1,68 @@
+version: "3.3"
+
+services:
+  daemon:
+    image: localhost:5000/organization/grouper-daemon
+    environment:
+      MYSQL_DATABASE: grouper
+      MYSQL_USER: grouper
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: example
+    secrets:
+      - source: grouper.hibernate.properties
+        target: grouper_grouper.hibernate.properties
+      - source: subject.properties
+        target: grouper_subject.properties
+
+  ui:
+    configs:
+      - source: shibboleth2.xml
+        target: /etc/shibboleth/shibboleth2.xml
+      - source: host-cert.pem
+        target: /etc/pki/tls/certs/host-cert.pem
+      - source: host-cert.pem
+        target: /etc/pki/tls/certs/cachain.pem
+    image: localhost:5000/organization/grouper-ui
+    ports:
+      - "443:443"
+    secrets:
+      - source: grouper.hibernate.properties
+        target: grouper_grouper.hibernate.properties
+      - source: subject.properties
+        target: grouper_subject.properties
+      - source: host-key.pem
+
+  ws:
+    configs:
+      - source: host-cert.pem
+        target: /etc/pki/tls/certs/host-cert.pem
+      - source: host-cert.pem
+        target: /etc/pki/tls/certs/cachain.pem
+    image: localhost:5000/organization/grouper-ws
+    ports:
+      - "8443:443"
+    secrets:
+      - source: grouper.hibernate.properties
+        target: grouper_grouper.hibernate.properties
+      - source: subject.properties
+        target: grouper_subject.properties
+      - source: host-key.pem
+
+networks:
+  default:
+    external:
+      name: internal
+
+configs:
+  shibboleth2.xml:
+    file: ./configs-and-secrets/shibboleth2.xml
+  host-cert.pem:
+    file: ./configs-and-secrets/host-cert.pem
+
+secrets:
+  grouper.hibernate.properties:
+    file: ./configs-and-secrets/grouper.hibernate.properties
+  subject.properties:
+    file: ./configs-and-secrets/subject.properties 
+  host-key.pem:
+    file: ./configs-and-secrets/host-key.pem

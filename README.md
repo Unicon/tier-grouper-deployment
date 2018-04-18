@@ -44,7 +44,7 @@ sudo yum install -y yum-utils \
 sudo yum-config-manager \
     --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
-sudo yum install docker-ce 
+sudo yum install -y docker-ce 
 
 #https://github.com/moby/moby/issues/16137#issuecomment-271615192
 sudo systemctl stop firewalld
@@ -57,7 +57,7 @@ sudo systemctl start docker
 ## Install Git and pull project source
 
 ```
-sudo yum install git
+sudo yum install -y git
 
 git clone https://github.com/Unicon/tier-grouper-deployment.git
 cd tier-grouper-deployment
@@ -245,4 +245,28 @@ sudo docker config rm host-cert.pem
 sudo docker stack rm anc
 sudo docker container rm -f registry 
 sudo docker network rm internal
+```
+
+# Bonus: Using a stack file to spin up the env
+
+Do you understand the `docker service` and `docker secret` subcommands? Try using the short-cut `stack.yml` file to save you some time.
+
+> You still need to have the internal network defined, the DB populated, and an image registry started... along with a directory and idp (using the ancillary ones or external ones).
+
+Start up all the Grouper components and verify:
+
+```
+sudo docker stack deploy grouper -c stack.yml
+sudo docker stack ls
+sudo docker service ls
+sudo docker secret ls
+```
+
+Shutdown the Grouper componenets and verify:
+
+```
+sudo docker stack rm grouper
+sudo docker stack ls
+sudo docker service ls
+sudo docker secret ls
 ```
