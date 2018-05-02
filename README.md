@@ -275,11 +275,11 @@ sudo docker secret ls
 # Bonus: Adding a new secret (or config) to an existing service
 
 ```
-docker service update daemon \
+sudo docker service update daemon \
 --secret-add source=grouper-loader.properties,target=grouper_grouper-loader.properties
-docker service update ui \
+sudo docker service update ui \
 --secret-add source=grouper-loader.properties,target=grouper_grouper-loader.properties
-docker service update ws \
+sudo docker service update ws \
 --secret-add source=grouper-loader.properties,target=grouper_grouper-loader.properties
 ```
 
@@ -290,32 +290,32 @@ Let's assuming we need to change the `grouper-loader.properties` secret. First w
 > Note: `-2` is an arbitrary extension. If additional changes were being made the `--secret-rm` parameter would also need to be updated to include that last arbitrary extension. But the `target=grouper_grouper-loader.properties` remains the same.
 
 1. Add the new secret file:
-```
-docker secret create grouper-loader-2.properties grouper-loader.properties
-```
+    ```
+    sudo docker secret create grouper-loader-2.properties grouper-loader.properties
+    ```
 
 1. Update the service removing the old secret and adding the new secret:
-```
-docker service update daemon \
---secret-add source=grouper-loader-2.properties,target=grouper_grouper-loader.properties \
---secret-rm grouper-loader.properties
-docker service update ui \
---secret-add source=grouper-loader-2.properties,target=grouper_grouper-loader.properties \
---secret-rm grouper-loader.properties
-docker service update ws \
---secret-add source=grouper-loader-2.properties,target=grouper_grouper-loader.properties \
---secret-rm grouper-loader.properties
-```
+    ```
+    sudo docker service update daemon \
+    --secret-add source=grouper-loader-2.properties,target=grouper_grouper-loader.properties \
+    --secret-rm grouper-loader.properties
+    sudo docker service update ui \
+    --secret-add source=grouper-loader-2.properties,target=grouper_grouper-loader.properties \
+    --secret-rm grouper-loader.properties
+    sudo docker service update ws \
+    --secret-add source=grouper-loader-2.properties,target=grouper_grouper-loader.properties \
+    --secret-rm grouper-loader.properties
+    ```
 
 1. At some point remove the old secret (this will prevent a `rollback` operation from working):
-```
-docker secret rm grouper-loader.properties
-```
+    ```
+    sudo docker secret rm grouper-loader.properties
+    ```
 
-# Bonus Rolling Back a Service Configuration Change
+# Bonus: Rolling Back a Service Configuration Change
 
 ```
-docker service rollback daemon
-docker service rollback ui
-docker service rollback ws
+sudo docker service rollback daemon
+sudo docker service rollback ui
+sudo docker service rollback ws
 ```
