@@ -1,4 +1,23 @@
-# tier-grouper-deployment
+# Deploying the TIER Grouper Image using Docker Swarm
+
+This is the companion repository for the 4-part video tutorial that demonstrates how to deploy the TIER Grouper Docker image. In the video series, John Gasper, IAM Consultant, demonstrates:
+
+1. Create a simple Docker Swarm.
+1. Create an organizational base image.
+1. Populate the Grouper database.
+1. Create custom images for each component (vs a single common image).
+1. Create Docker Secrets and Docker Configs.
+1. Starting Swarm Services: Grouper Daemon, UI, and WS.
+1. Discussing next steps for moving forward in your deployment.
+
+The videos are:
+
+1. Session 1: Grouper Environment Prep: https://youtu.be/750J5UBTctw
+1. Session 2: Grouper Database and Configs: https://youtu.be/agX-cm4-Okg
+1. Session 3: Grouper Services: https://youtu.be/HQ0qjOysexA
+1. Session 4: Grouper Continuing Forward: https://youtu.be/eMAL_RamYPc
+
+> This tutorial was funded through Unicon's Grouper Open Source Support program. We thank our clients that are members of the program for their support that made this project possible. For more information about the Grouper OSS program, please see https://unicon.net/opensource/grouper.
 
 # Env Prep
 
