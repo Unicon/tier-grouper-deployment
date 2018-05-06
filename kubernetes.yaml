@@ -1,0 +1,176 @@
+# This deployment configuration is still under development. Feel free to test and contribute back enhancments.
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: daemon
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service: daemon
+    spec:
+      containers:
+      - env:
+        - name: ENV
+          value: dev
+        - name: USERTOKEN
+          value: swarmtest
+        image: localhost:5000/organization/grouper-daemon
+        name: daemon
+        resources: {}
+        volumeMounts:
+         - name: secrets
+           mountPath: /var/run/secrets
+           readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: secrets
+          secret: 
+            secretName: grouper
+            items:
+              - key: grouper.hibernate.properties
+                path: grouper_grouper.hibernate.properties
+              - key: subject.properties
+                path: grouper_subject.properties
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+#  labels:
+#    io.kompose.service: ui
+  name: ui
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service: ui
+    spec:
+      containers:
+      - env:
+        - name: ENV
+          value: dev
+        - name: USERTOKEN
+          value: swarmtest
+        image: localhost:5000/organization/grouper-ui
+        name: ui
+        ports:
+        - containerPort: 443
+        resources: {}
+        volumeMounts:
+        - name: shibboleth2-xml
+          mountPath: /etc/shibboleth/shibboleth2.xml
+          subPath: shibboleth2.xml
+        - name: host-certs
+          mountPath: /etc/pki/tls/certs/host-cert.pem
+          subPath: host-cert.pem
+        - name: host-certs
+          mountPath: /etc/pki/tls/certs/cachain.pem
+          subPath: cachain.pem
+        - name: secrets
+          mountPath: /var/run/secrets
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: shibboleth2-xml
+          configMap: 
+            name: shibboleth2.xml
+        - name: host-certs
+          configMap: 
+            name: host-certs
+        - name: secrets
+          secret: 
+            secretName: grouper
+            items:
+              - key: grouper.hibernate.properties
+                path: grouper_grouper.hibernate.properties
+              - key: subject.properties
+                path: grouper_subject.properties
+              - key: host-key.pem
+                path: host-key.pem
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+spec:
+  ports:
+  - name: "443"
+    port: 443
+    targetPort: 443
+  selector:
+    service: ui
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+#  labels:
+#    io.kompose.service: ws
+  name: ws
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service: ws
+    spec:
+      containers:
+      - env:
+        - name: ENV
+          value: dev
+        - name: USERTOKEN
+          value: swarmtest
+        image: localhost:5000/organization/grouper-ws
+        name: ws
+        ports:
+        - containerPort: 443
+        resources: {}
+        volumeMounts:
+        - name: host-certs
+          mountPath: /etc/pki/tls/certs/host-cert.pem
+          subPath: host-cert.pem
+        - name: host-certs
+          mountPath: /etc/pki/tls/certs/cachain.pem
+          subPath: cachain.pem
+        - name: secrets
+          mountPath: /var/run/secrets
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: host-certs
+          configMap: 
+            name: host-certs
+        - name: secrets
+          secret: 
+            secretName: grouper
+            items:
+              - key: grouper.hibernate.properties
+                path: grouper_grouper.hibernate.properties
+              - key: subject.properties
+                path: grouper_subject.properties
+              - key: host-key.pem
+                path: host-key.pem
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ws
+spec:
+  ports:
+  - name: "8443"
+    port: 8443
+    targetPort: 443
+  selector:
+    service: ws
+status:
+  loadBalancer: {}
