@@ -338,3 +338,21 @@ sudo docker service rollback daemon
 sudo docker service rollback ui
 sudo docker service rollback ws
 ```
+
+# Bonus: Kubernetes Deployment Configuration
+
+1. Create the multi-part secret and configmaps:
+    ```
+    cd configs-and-secrets
+    kubectl create secret generic grouper --from-file=grouper.hibernate.properties --from-file=subject.properties --from-file=host-key.pem
+    kubectl create configmap shibboleth2.xml --from-file=shibboleth2.xml
+    kubectl create configmap host-certs --from-file=host-cert.pem --from-file=cachain.pem=host-cert.pem
+
+    cd..
+    ```
+    
+2. Apply the config    
+    ```
+    kubectl apply -f kubernetes.yaml
+    ```
+       
