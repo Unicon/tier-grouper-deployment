@@ -2,10 +2,30 @@ version: "3.3"
 
 services:
   daemon:
-    image: localhost:5000/organization/grouper-daemon
+    deploy:
+#      placement:
+#        constraints:
+#          - node.labels.type == grouper_daemon
+#        preferences:
+#          - spread: node.labels.datacenter
+      replicas: 1
+      resources:
+        limits:
+          memory: 8G
+      update_config:
+        parallelism: 1
+        delay: 30s
     environment:
       ENV: dev
       USERTOKEN: swarmtest
+    healthcheck:
+      #If the daemon (aka container) is up... it is healthy
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    image: localhost:5000/organization/grouper-daemon
     secrets:
       - source: grouper.hibernate.properties
         target: grouper_grouper.hibernate.properties
@@ -20,9 +40,28 @@ services:
         target: /etc/pki/tls/certs/host-cert.pem
       - source: host-cert.pem
         target: /etc/pki/tls/certs/cachain.pem
+    deploy:
+#      placement:
+#        constraints:
+#          - node.labels.type != pinned
+#        preferences:
+#          - spread: node.labels.datacenter
+      replicas: 1
+      resources:
+        limits:
+          memory: 2G
+      update_config:
+        parallelism: 1
+        delay: 30s
     environment:
       ENV: dev
       USERTOKEN: swarmtest
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--insecure", "https://localhost/grouper"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     image: localhost:5000/organization/grouper-ui
     ports:
       - target: 443
@@ -41,9 +80,28 @@ services:
         target: /etc/pki/tls/certs/host-cert.pem
       - source: host-cert.pem
         target: /etc/pki/tls/certs/cachain.pem
+    deploy:
+#      placement:
+#        constraints:
+#          - node.labels.type != pinned
+#        preferences:
+#          - spread: node.labels.datacenter
+      replicas: 1
+      resources:
+        limits:
+          memory: 2G
+      update_config:
+        parallelism: 1
+        delay: 30s
     environment:
       ENV: dev
-      USERTOKEN: swarmtest    
+      USERTOKEN: swarmtest
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--insecure", "https://localhost/grouper-ws/status?diagnosticType=trivial"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     image: localhost:5000/organization/grouper-ws
     ports:
       - target: 443
